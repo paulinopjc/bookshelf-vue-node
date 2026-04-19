@@ -1,0 +1,279 @@
+{
+  "info": {
+    "name": "Bookshelf API",
+    "description": "RESTful API for tracking books with status, ratings, reviews, search, filtering, and stats. Built with Express 5 + TypeScript + PostgreSQL.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Books",
+      "item": [
+        {
+          "name": "List all books",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/books",
+              "host": ["{{base_url}}"],
+              "path": ["api", "books"]
+            },
+            "description": "Returns all books ordered by updated_at DESC. Supports optional query params for filtering."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"title\": \"The Pragmatic Programmer\",\n      \"author\": \"Andy Hunt\",\n      \"status\": \"finished\",\n      \"rating\": 5,\n      \"review\": \"Essential reading\",\n      \"created_at\": \"2026-04-19T05:00:00.000Z\",\n      \"updated_at\": \"2026-04-19T05:00:00.000Z\"\n    }\n  ],\n  \"count\": 1\n}"
+            }
+          ]
+        },
+        {
+          "name": "List books (filter by status)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/books?status=reading",
+              "host": ["{{base_url}}"],
+              "path": ["api", "books"],
+              "query": [
+                { "key": "status", "value": "reading", "description": "Filter by status: unread, reading, or finished" }
+              ]
+            },
+            "description": "Returns books matching the given status."
+          },
+          "response": [
+            {
+              "name": "200 OK (filtered)",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 2,\n      \"title\": \"Clean Code\",\n      \"author\": \"Robert Martin\",\n      \"status\": \"reading\",\n      \"rating\": null,\n      \"review\": null,\n      \"created_at\": \"2026-04-19T05:00:00.000Z\",\n      \"updated_at\": \"2026-04-19T05:00:00.000Z\"\n    }\n  ],\n  \"count\": 1\n}"
+            }
+          ]
+        },
+        {
+          "name": "Search books",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/books?q=pragmatic",
+              "host": ["{{base_url}}"],
+              "path": ["api", "books"],
+              "query": [
+                { "key": "q", "value": "pragmatic", "description": "Search by title or author (case-insensitive)" }
+              ]
+            },
+            "description": "Searches books by title or author using case-insensitive matching."
+          },
+          "response": [
+            {
+              "name": "200 OK (search results)",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"title\": \"The Pragmatic Programmer\",\n      \"author\": \"Andy Hunt\",\n      \"status\": \"finished\",\n      \"rating\": 5,\n      \"review\": null,\n      \"created_at\": \"2026-04-19T05:00:00.000Z\",\n      \"updated_at\": \"2026-04-19T05:00:00.000Z\"\n    }\n  ],\n  \"count\": 1\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get book by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/books/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "books", "1"]
+            },
+            "description": "Returns a single book by its ID."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"title\": \"The Pragmatic Programmer\",\n    \"author\": \"Andy Hunt\",\n    \"status\": \"finished\",\n    \"rating\": 5,\n    \"review\": \"Essential reading\",\n    \"created_at\": \"2026-04-19T05:00:00.000Z\",\n    \"updated_at\": \"2026-04-19T05:00:00.000Z\"\n  }\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "body": "{\n  \"error\": \"Book not found\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/books/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "books", "stats"]
+            },
+            "description": "Returns aggregate reading statistics: total books, count by status, average rating, and books finished this year."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"data\": {\n    \"total\": 3,\n    \"by_status\": {\n      \"unread\": 1,\n      \"reading\": 1,\n      \"finished\": 1\n    },\n    \"average_rating\": 4.5,\n    \"finished_this_year\": 1\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create a book",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/books",
+              "host": ["{{base_url}}"],
+              "path": ["api", "books"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Going Solo\",\n  \"author\": \"Roald Dahl\"\n}"
+            },
+            "description": "Creates a new book. Status defaults to 'unread' if not provided. Valid statuses: unread, reading, finished."
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"title\": \"Going Solo\",\n    \"author\": \"Roald Dahl\",\n    \"status\": \"unread\",\n    \"rating\": null,\n    \"review\": null,\n    \"created_at\": \"2026-04-19T05:00:00.000Z\",\n    \"updated_at\": \"2026-04-19T05:00:00.000Z\"\n  }\n}"
+            },
+            {
+              "name": "422 Validation Error",
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "body": "{\n  \"error\": \"Validation failed\",\n  \"details\": {\n    \"title\": \"Title is required\",\n    \"author\": \"Author is required\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update a book (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/books/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "books", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"finished\",\n  \"rating\": 5,\n  \"review\": \"Wonderful memoir\"\n}"
+            },
+            "description": "Partially updates a book. Only send the fields you want to change. Rating and review can only be set when status is 'finished'."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"title\": \"Going Solo\",\n    \"author\": \"Roald Dahl\",\n    \"status\": \"finished\",\n    \"rating\": 5,\n    \"review\": \"Wonderful memoir\",\n    \"created_at\": \"2026-04-19T05:00:00.000Z\",\n    \"updated_at\": \"2026-04-19T06:00:00.000Z\"\n  }\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "body": "{\n  \"error\": \"Book not found\"\n}"
+            },
+            {
+              "name": "422 Validation Error",
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "body": "{\n  \"error\": \"Validation failed\",\n  \"details\": {\n    \"_\": \"Rating and review can only be set when status is \\\"finished\\\"\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update a book (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/books/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "books", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Going Solo\",\n  \"author\": \"Roald Dahl\",\n  \"status\": \"reading\"\n}"
+            },
+            "description": "Full update of a book. Same validation rules as PATCH."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"title\": \"Going Solo\",\n    \"author\": \"Roald Dahl\",\n    \"status\": \"reading\",\n    \"rating\": null,\n    \"review\": null,\n    \"created_at\": \"2026-04-19T05:00:00.000Z\",\n    \"updated_at\": \"2026-04-19T06:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete a book",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/books/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "books", "1"]
+            },
+            "description": "Deletes a book by ID. Returns 204 No Content on success."
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "status": "No Content",
+              "code": 204,
+              "body": ""
+            },
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "body": "{\n  \"error\": \"Book not found\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
