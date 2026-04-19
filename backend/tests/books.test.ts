@@ -1,16 +1,16 @@
 import { describe, it, expect } from '@jest/globals'
 import request from 'supertest'
 import { createApp } from '../src/app'
-import { db } from '../src/db/connection'
+import { pool } from '../src/db/connection'
 
 const app = createApp()
 
-function seed(rows: Array<{ title: string; author: string; status?: string; rating?: number; review?: string }>) {
-  const stmt = db.prepare(
-    'INSERT INTO books (title, author, status, rating, review) VALUES (?, ?, ?, ?, ?)'
-  )
+async function seed(rows: Array<{ title: string; author: string; status?: string; rating?: number; review?: string }>) {
   for (const row of rows) {
-    stmt.run(row.title, row.author, row.status ?? 'unread', row.rating ?? null, row.review ?? null)
+    await pool.query(
+      'INSERT INTO books (title, author, status, rating, review) VALUES ($1, $2, $3, $4, $5)',
+      [row.title, row.author, row.status ?? 'unread', row.rating ?? null, row.review ?? null]
+    )
   }
 }
 
@@ -22,7 +22,7 @@ describe('GET /api/books', () => {
   })
 
   it('returns all books', async () => {
-    seed([
+    await seed([
       { title: 'Book A', author: 'Author A' },
       { title: 'Book B', author: 'Author B' },
     ])
@@ -33,7 +33,7 @@ describe('GET /api/books', () => {
   })
 
   it('filters by status', async () => {
-    seed([
+    await seed([
       { title: 'Reading book', author: 'A', status: 'reading' },
       { title: 'Unread book', author: 'B', status: 'unread' },
     ])
@@ -44,7 +44,7 @@ describe('GET /api/books', () => {
   })
 
   it('searches by title and author', async () => {
-    seed([
+    await seed([
       { title: 'Pragmatic Programmer', author: 'Andy Hunt' },
       { title: 'Clean Code', author: 'Robert Martin' },
     ])
@@ -84,7 +84,7 @@ describe('POST /api/books', () => {
 
 describe('GET /api/books/:id', () => {
   it('returns a single book', async () => {
-    seed([{ title: 'Solo book', author: 'Solo author' }])
+    await seed([{ title: 'Solo book', author: 'Solo author' }])
     const list = await request(app).get('/api/books')
     const id = list.body.data[0].id
 
@@ -107,7 +107,7 @@ describe('GET /api/books/:id', () => {
 
 describe('PATCH /api/books/:id', () => {
   it('updates fields', async () => {
-    seed([{ title: 'Old title', author: 'Old author' }])
+    await seed([{ title: 'Old title', author: 'Old author' }])
     const list = await request(app).get('/api/books')
     const id = list.body.data[0].id
 
@@ -122,7 +122,7 @@ describe('PATCH /api/books/:id', () => {
   })
 
   it('rejects rating without finished status', async () => {
-    seed([{ title: 'X', author: 'Y' }])
+    await seed([{ title: 'X', author: 'Y' }])
     const list = await request(app).get('/api/books')
     const id = list.body.data[0].id
 
@@ -141,7 +141,7 @@ describe('PATCH /api/books/:id', () => {
 
 describe('DELETE /api/books/:id', () => {
   it('deletes a book', async () => {
-    seed([{ title: 'Doomed', author: 'X' }])
+    await seed([{ title: 'Doomed', author: 'X' }])
     const list = await request(app).get('/api/books')
     const id = list.body.data[0].id
 
@@ -168,7 +168,7 @@ describe('GET /api/books/stats', () => {
   })
 
   it('aggregates correctly', async () => {
-    seed([
+    await seed([
       { title: 'A', author: 'a', status: 'finished', rating: 4 },
       { title: 'B', author: 'b', status: 'finished', rating: 5 },
       { title: 'C', author: 'c', status: 'reading' },

@@ -2,13 +2,13 @@
 
 A full-stack book tracking app. Add books, mark them as unread/reading/finished, rate and review finished books, search and filter your collection, and view reading stats.
 
-Built with a REST API backend (Express + TypeScript + SQLite) and a Vue 3 SPA frontend (Nuxt-style Composition API + Pinia + Tailwind CSS).
+Built with a REST API backend (Express + TypeScript + PostgreSQL) and a Vue 3 SPA frontend (Nuxt-style Composition API + Pinia + Tailwind CSS).
 
 ## Tech Stack
 
 ### Backend
 - **Express 5** with TypeScript
-- **SQLite** via better-sqlite3 (zero-config, file-based)
+- **PostgreSQL** via node-postgres (pg), Neon for production
 - **Zod v4** for request validation
 - **Jest + Supertest** for API tests (100% endpoint coverage)
 - **Morgan** for request logging
@@ -67,10 +67,14 @@ bookshelf-vue-node/
 ### Prerequisites
 - Node.js 20+
 - npm
+- Docker (for local PostgreSQL)
 
 ### Backend
 
 ```bash
+# Start PostgreSQL
+docker compose up -d
+
 cd backend
 npm install
 cp .env.example .env
