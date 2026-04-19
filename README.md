@@ -2,7 +2,10 @@
 
 A full-stack book tracking app. Add books, mark them as unread/reading/finished, rate and review finished books, search and filter your collection, and view reading stats.
 
-Built with a REST API backend (Express + TypeScript + PostgreSQL) and a Vue 3 SPA frontend (Nuxt-style Composition API + Pinia + Tailwind CSS).
+Built with a REST API backend (Express + TypeScript + PostgreSQL) and a Vue 3 SPA frontend (Composition API + Pinia + Tailwind CSS).
+
+**Live:** [bookshelf-vue-node.vercel.app](https://bookshelf-vue-node.vercel.app)
+**API:** [bookshelf-api-c0w8.onrender.com](https://bookshelf-api-c0w8.onrender.com)
 
 ## Tech Stack
 
@@ -26,29 +29,30 @@ Built with a REST API backend (Express + TypeScript + PostgreSQL) and a Vue 3 SP
 
 ```
 bookshelf-vue-node/
+  docker-compose.yml        # Local PostgreSQL
   backend/
     src/
-      controllers/    # Route handlers (books)
-      db/             # SQLite connection + migrations
-      middleware/     # Validation middleware
-      routes/         # Express route definitions
-      services/       # Business logic (bookService)
-      types/          # TypeScript types
-      validators/     # Zod schemas
-      app.ts          # Express app factory
-      server.ts       # Entry point
-    tests/            # Jest API tests
+      controllers/          # Route handlers (books)
+      db/                   # PostgreSQL connection + migrations
+      middleware/           # Error handling, validation
+      routes/               # Express route definitions
+      services/             # Business logic (bookService)
+      types/                # TypeScript types
+      validators/           # Zod schemas
+      app.ts                # Express app factory
+      server.ts             # Entry point
+    tests/                  # Jest API tests
   frontend/
     src/
-      api/            # Axios client + book API functions
-      components/     # Vue components (BookCard, BookForm, StatsBar, etc.)
-      composables/    # Reusable composition functions
-      router/         # Vue Router config
-      stores/         # Pinia stores (books)
-      types/          # TypeScript types + shared constants
-      views/          # Page components (BookList, BookCreate, BookEdit)
-      App.vue         # Root component
-      main.ts         # App entry point
+      api/                  # Axios client + book API functions
+      components/           # Vue components (BookCard, BookForm, StatsBar, etc.)
+      composables/          # Reusable composition functions
+      router/               # Vue Router config
+      stores/               # Pinia stores (books)
+      types/                # TypeScript types + shared constants
+      views/                # Page components (BookList, BookCreate, BookEdit)
+      App.vue               # Root component
+      main.ts               # App entry point
 ```
 
 ## API Endpoints
@@ -61,6 +65,14 @@ bookshelf-vue-node/
 | POST | /api/books | Create a book |
 | PATCH | /api/books/:id | Update a book |
 | DELETE | /api/books/:id | Delete a book |
+
+## Documentation
+
+**Postman documentation:**
+
+[View API Docs on Postman](https://documenter.getpostman.com/view/53937112/2sBXqDt3WY)
+
+Import `bookshelf-api.postman_collection.json` into Postman to test all endpoints locally. Set the `base_url` variable to `http://localhost:4001` for local development or `https://bookshelf-api-c0w8.onrender.com` for production.
 
 ## Getting Started
 
@@ -120,6 +132,12 @@ cd frontend
 npm run build
 npm run preview    # Preview at http://localhost:4173
 ```
+
+## Deployment
+
+- **Backend:** Render (Web Service, root directory: `backend`)
+- **Frontend:** Vercel (root directory: `frontend`, framework: Vue/Vite)
+- **Database:** Neon PostgreSQL (free tier)
 
 ## Features
 
